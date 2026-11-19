@@ -13,7 +13,7 @@ Ambilight WLED — это система динамической фоновой
 ```text
 ┌──────────────┐            ┌─────────────────┐          ┌──────────────┐
 │  Raspberry   │  DDP/      │   Сеть/WiFi     │  DDP/    │   ESP32      │
-│  Pi 5        │  UDP ──▶  │  (Port 4048) ──▶│  UDP ──▶│   (WLED)      │
+│  Pi 5        │  UDP ──▶  │  (Port 4048) ──▶│  UDP ──▶│   (WLED)     │
 │  (Producer)  │            │                 │          │  (Consumer)  │
 └──────┬───────┘            └─────────────────┘          └──────┬───────┘
        │                                                        │
@@ -68,7 +68,7 @@ requirements.txt    версии зависимостей
 ## Быстрый старт
 1. Установка на Raspberry Pi
 ```
-git clone https://github.com/YarValerievich/ambilight_wled.git
+git clone https://github.com/YarValerievich/ambilight-wled.git
 cd ambilight-pro
 
 python3 -m venv --system-site-packages venv
@@ -77,6 +77,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 2. Настройка WLED
+   
 Прошейте ESP32 прошивкой WLED.
 В настройках LED Preferences укажите:
 LED Count: 340
@@ -84,7 +85,7 @@ GPIO: 16
 Color Order: GRB
 Сохраните Preset #1 как "Black" (выключено) и настройте Apply at boot.
 
-3. Запуск
+4. Запуск
 ```
 python -m engine.main config/config.yaml
 ```
