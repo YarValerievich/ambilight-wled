@@ -1,0 +1,89 @@
+# Конфиг для тестового стенда (монитор + OV5647 + 340 LED)
+camera:
+  sensor_size: [640, 480]  # OV5647 родное разрешение
+  fps: 30
+  controls:
+    AeEnable: true
+    AwbEnable: true
+    Brightness: 0.0         # Яркость (-1.0 до 1.0)
+    Contrast: 1.0           # Контраст (0.0 до 2.0)
+    Saturation: 1.0         # Насыщенность (0.0 до 2.0)
+    Sharpness: 1.0          # Резкость (0.0 до 2.0)
+
+frame:
+  width: 320
+  height: 180
+
+zones:
+  top: 110
+  bottom: 110
+  left: 60
+  right: 60
+  depth_frac: 0.06
+  inset_frac: 0.025
+
+strip:
+  count: 340
+  order: ["left_up", "top_right", "right_down", "bottom_left"]
+
+transport:
+  mode: ddp
+  ddp:
+    host: "192.168.0.228"
+    port: 4048
+
+smoothing:
+  spatial:
+    kind: gaussian
+    sigma_leds: 1.0
+  temporal:
+    tau_ms: 80.0
+    tau_fast_ms: 30.0
+    tau_slow_ms: 200.0
+    motion_threshold: 12.0
+    static_threshold: 2.0
+    scene_cut_threshold: 60.0
+    hysteresis_ms: 100
+
+color:
+  gamma: 2.2
+  white_balance: [1.0, 1.0, 1.0]
+  black_threshold: 10
+  brightness: 1.0
+  power:
+    max_watts: 105.0  # 340 LED × 16 мА × 5V / 255 ≈ 106 Вт
+    ma_per_channel: 16.0
+    voltage: 5.0
+
+scene:
+  enabled: true
+  interval_ms: 500
+  hysteresis_s: 3.0
+  profiles:
+    default: {tau_scale: 1.0, saturation: 1.0, brightness: 1.0, black_threshold: 10}
+    movie:   {tau_scale: 1.6, saturation: 0.95, brightness: 0.9, black_threshold: 16}
+    game:    {tau_scale: 0.5, saturation: 1.1, brightness: 1.0, black_threshold: 8}
+    news:    {tau_scale: 2.2, saturation: 0.9, brightness: 0.85, black_threshold: 12}
+    static:  {tau_scale: 2.5, saturation: 1.0, brightness: 0.4, black_threshold: 12}
+
+mqtt:
+  hosts: ""
+  port: 1883
+  username: ""
+  password: ""
+  base_topic: "ambilight"
+  discovery_prefix: "homeassistant"
+  device_name: "TV Ambilight"
+  device_id: "ambilight_tv"
+
+web:
+  host: "0.0.0.0"
+  port: 8000
+
+calibration:
+  dir: "calib_data"
+  aruco_dict: DICT_4X4_50
+  marker_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+
+logging:
+  level: INFO

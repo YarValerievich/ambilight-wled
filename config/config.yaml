@@ -1,0 +1,95 @@
+camera:
+  # Режим сенсора IMX708 (CM3 Wide): 1536x864 binned, до 120 fps
+  sensor_size: [1536, 864]
+  fps: 60
+  # Зафиксированные после калибровки controls (заполняет мастер калибровки)
+  controls:
+    ExposureTime: 8330        # мкс; кратно периоду 60 Гц PWM подсветки ТВ
+    AnalogueGain: 2.0
+    ColourGains: [1.8, 1.6]   # [red, blue]
+    AeEnable: false
+    AwbEnable: false
+
+frame:
+  # Нормализованный кадр экрана после remap
+  width: 640
+  height: 360
+
+zones:
+  top: 110
+  bottom: 110
+  left: 60
+  right: 60
+  depth_frac: 0.06        # глубина выборки зоны, доля размера кадра
+  inset_frac: 0.025       # отступ от кромки экрана (разрыв петли обратной связи)
+
+strip:
+  count: 340
+  # Порядок обхода ленты от первого LED. Начало: нижний левый угол, по часовой.
+  # Последовательность сторон в физическом порядке подключения:
+  order: [left_up, top_right, right_down, bottom_left]
+
+transport:
+  mode: ddp               # ddp | adalight
+  ddp:
+    host: "192.168.0.228" # mDNS-имя или IP ESP32 с WLED
+    port: 4048
+  adalight:
+    device: /dev/ttyAMA0
+    baud: 1500000
+
+smoothing:
+  spatial:
+    kind: gaussian        # gaussian | none
+    sigma_leds: 1.0
+  temporal:
+    tau_ms: 80.0          # базовая постоянная времени EMA
+    tau_fast_ms: 30.0     # при активном движении
+    tau_slow_ms: 200.0    # статичная сцена
+    motion_threshold: 12.0    # средняя |Δ| зон для «движения»
+    static_threshold: 2.0
+    scene_cut_threshold: 60.0 # мгновенный сброс EMA
+    hysteresis_ms: 100
+
+color:
+  gamma: 2.2
+  white_balance: [1.0, 1.0, 1.0]   # RGB-множители под цвет стены
+  black_threshold: 10              # яркость (0-255), ниже — гасим зону
+  brightness: 1.0                  # глобальный множитель 0..1
+  power:
+    max_watts: 160.0               # бюджет из 200 Вт БП
+    ma_per_channel: 16.0           # ток одного суб-пикселя WS2812B при 255
+    voltage: 5.0
+
+scene:
+  enabled: true
+  interval_ms: 500
+  hysteresis_s: 3.0
+  profiles:
+    default: {tau_scale: 1.0, saturation: 1.0, brightness: 1.0, black_threshold: 10}
+    movie:   {tau_scale: 1.6, saturation: 0.95, brightness: 0.9, black_threshold: 16}
+    game:    {tau_scale: 0.5, saturation: 1.1, brightness: 1.0, black_threshold: 8}
+    news:    {tau_scale: 2.2, saturation: 0.9, brightness: 0.85, black_threshold: 12}
+    static:  {tau_scale: 2.5, saturation: 1.0, brightness: 0.4, black_threshold: 12}
+
+mqtt:
+  hosts: ""
+  port: 1883
+  username: ""
+  password: ""
+  base_topic: "ambilight"
+  discovery_prefix: "homeassistant"
+  device_name: "TV Ambilight"
+  device_id: "ambilight_tv"
+
+web:
+  host: "0.0.0.0"
+  port: 8000
+
+calibration:
+  dir: "calib_data"       # npz-файлы калибровки
+  aruco_dict: DICT_4X4_50
+  marker_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+
+logging:
+  level: INFO

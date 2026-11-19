@@ -1,0 +1,76 @@
+# Примеры автоматизаций Home Assistant для Ambilight Pro
+
+# --- Ночной режим 23:00–07:00 -------------------------------------------
+- alias: "Ambilight: ночной режим"
+  triggers:
+    - trigger: time
+      at: "23:00:00"
+  actions:
+    - action: light.turn_on
+      target: {entity_id: light.wled_tv}
+      data: {brightness_pct: 35, transition: 5}
+
+- alias: "Ambilight: дневной режим"
+  triggers:
+    - trigger: time
+      at: "07:00:00"
+  actions:
+    - action: light.turn_on
+      target: {entity_id: light.wled_tv}
+      data: {brightness_pct: 100, transition: 5}
+
+# --- Уведомление: дверной звонок ----------------------------------------
+- alias: "Ambilight: звонок в дверь"
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.doorbell
+      to: "on"
+  actions:
+    - action: mqtt.publish
+      data:
+        topic: ambilight/notify
+        payload: '{"kind": "pulse", "color": [0, 120, 255], "duration": 4}'
+
+# --- Алерт: перегрев CPU --------------------------------------------------
+- alias: "Ambilight: перегрев Pi"
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.ambilight_cpu_temp
+      above: 80
+      for: "00:00:30"
+  actions:
+    - action: notify.mobile_app
+      data: {message: "Ambilight: CPU {{ states('sensor.ambilight_cpu_temp') }}°C"}
+
+# --- Алерт: просадка FPS --------------------------------------------------
+- alias: "Ambilight: низкий FPS"
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.ambilight_fps
+      below: 20
+      for: "00:00:10"
+  actions:
+    - action: notify.mobile_app
+      data: {message: "Ambilight: FPS упал до {{ states('sensor.ambilight_fps') }}"}
+
+# --- Аудио-режим (вечеринка): выключаем поток, включаем WLED AudioReactive
+- alias: "Ambilight: аудио-режим ON"
+  triggers:
+    - trigger: state
+      entity_id: input_boolean.party_mode
+      to: "on"
+  actions:
+    - action: switch.turn_off
+      target: {entity_id: switch.ambilight}
+    - action: select.select_option
+      target: {entity_id: select.wled_tv_preset}
+      data: {option: "Audio GEQ"}   # заранее созданный пресет WLED
+
+- alias: "Ambilight: аудио-режим OFF"
+  triggers:
+    - trigger: state
+      entity_id: input_boolean.party_mode
+      to: "off"
+  actions:
+    - action: switch.turn_on
+      target: {entity_id: switch.ambilight}
