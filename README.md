@@ -19,7 +19,7 @@ graph LR
     end
 
     subgraph Network ["Сетевой транспорт"]
-        UDP["DDP Protocol<br/>UDP Port 4048<br/>Drop-policy: без ретраев"]
+        UDP["DDP Protocol<br/>UDP Port 4048<br/>"]
     end
 
     subgraph LED_System ["Система управления периферией"]
