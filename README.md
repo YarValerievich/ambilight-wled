@@ -6,20 +6,37 @@ Ambilight WLED — это система динамической фоновой
 Амбилайт для 85" ТВ: Raspberry Pi 5 + Camera Module 3 Wide (потолочный монтаж)
 → 340 зон → DDP по WiFi → ESP32 с WLED → WS2812B 340 LED.
 
-## Архитектура
+## Архитектура 
 
 Система построена по модели **Producer-Consumer** с односторонним потоком данных по UDP (DDP).
 
-```text
-┌──────────────┐            ┌─────────────────┐          ┌──────────────┐
-│  Raspberry   │  DDP/      │   Сеть/WiFi     │  DDP/    │   ESP32      │
-│  Pi 5        │  UDP ──▶  │  (Port 4048) ──▶│  UDP ──▶│   (WLED)     │
-│  (Producer)  │            │                 │          │  (Consumer)  │
-└──────┬───────┘            └─────────────────┘          └──────┬───────┘
-       │                                                        │
-       ▼                                                        ▼
-  Camera (OV5647)                                          FastLED RMT
-  OpenCV / NumPy                                           → WS2812B Strip
+```mermaid
+graph LR
+    subgraph Capture_System [Система захвата и обработки]
+        CAM[Камера OV5647\nЗахват видеопотока]
+        PI[Raspberry Pi 5\nProducer\nOpenCV / NumPy / Python]
+        CAM -- "CSI Шлейф\nRaw Video Frames" --> PI
+    end
+
+    subgraph Network [Сетевой транспорт]
+        UDP[DDP Protocol\nUDP Port 4048\nDrop-policy (без ретраев)]
+    end
+
+    subgraph LED_System [Система управления периферией]
+        ESP[ESP32 DevKit\nConsumer / WLED]
+        LED[WS2812B Лента\n340 независимых зон]
+        ESP -- "FastLED RMT\nGPIO 16 + 74AHCT125" --> LED
+    end
+
+    PI -- "RGB Пакеты\n~30 FPS, Latency < 50ms" --> UDP
+    UDP -- "WiFi / Ethernet\nЛокальная сеть" --> ESP
+
+    classDef hardware fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef software fill:#e8f5e9,stroke:#4caf50,stroke-width:1px;
+    classDef protocol fill:#e1f5fe,stroke:#03a9f4,stroke-width:1px,stroke-dasharray: 5 5;
+    
+    class CAM,PI,ESP,LED hardware;
+    class UDP protocol;
 ```
 
 ## Ключевые особенности
