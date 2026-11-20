@@ -37,6 +37,14 @@ Ambilight WLED — это система динамической фоновой
 - ESP32 (WLED) вплотную к началу ленты + 74AHCT125 + БП LRS-350-5 (исполнительный блок за ТВ).
 - Связь Pi ↔ ESP32 — WiFi (DDP, порт 4048). Физические провода между Pi и ESP32 отсутствуют.
 
+## Демонстрация работы
+На левой части экрана оригинальное изображение, на правой - снимок с камеры. Цвет ленты отличается от цвета на экране из-за цветопередачи самого объектива.
+<img width="400" height="225" alt="IMG_17281" src="https://github.com/user-attachments/assets/0b637308-3a3a-432a-9295-a17b75c9f406" />
+
+<img width="450" height="253" alt="IMG_17281-" src="https://github.com/user-attachments/assets/ae3a6720-20de-4e8b-8fce-bf02d79c8078" />
+
+
+
 ## Установка
 1. ESP32: прошить WLED — см. `wled/SETUP.md`.
 2. Pi: `bash deploy/setup.sh`, отредактировать `/opt/ambilight/config/config.yaml`
