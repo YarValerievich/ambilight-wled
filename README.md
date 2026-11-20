@@ -24,7 +24,7 @@ graph LR
 
     subgraph LED_System ["Система управления периферией"]
         ESP["ESP32 DevKit<br/>Consumer / WLED"]
-        LED["WS2812B Лента<br/>340 независимых зон"]
+        LED["WS2812B<br/>"]
         ESP -- "FastLED RMT<br/>GPIO 16 + 74AHCT125" --> LED
     end
 
