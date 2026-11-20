@@ -12,29 +12,28 @@ Ambilight WLED — это система динамической фоновой
 
 ```mermaid
 graph LR
-    subgraph Capture_System [Система захвата и обработки]
-        CAM[Камера OV5647\nЗахват видеопотока]
-        PI[Raspberry Pi 5\nProducer\nOpenCV / NumPy / Python]
-        CAM -- "CSI Шлейф\nRaw Video Frames" --> PI
+    subgraph Capture_System ["Система захвата и обработки"]
+        CAM["Камера OV5647<br/>Захват видеопотока"]
+        PI["Raspberry Pi 5<br/>Producer<br/>OpenCV / NumPy / Python"]
+        CAM -- "CSI шлейф<br/>Raw Video Frames" --> PI
     end
 
-    subgraph Network [Сетевой транспорт]
-        UDP[DDP Protocol\nUDP Port 4048\nDrop-policy (без ретраев)]
+    subgraph Network ["Сетевой транспорт"]
+        UDP["DDP Protocol<br/>UDP Port 4048<br/>Drop-policy: без ретраев"]
     end
 
-    subgraph LED_System [Система управления периферией]
-        ESP[ESP32 DevKit\nConsumer / WLED]
-        LED[WS2812B Лента\n340 независимых зон]
-        ESP -- "FastLED RMT\nGPIO 16 + 74AHCT125" --> LED
+    subgraph LED_System ["Система управления периферией"]
+        ESP["ESP32 DevKit<br/>Consumer / WLED"]
+        LED["WS2812B Лента<br/>340 независимых зон"]
+        ESP -- "FastLED RMT<br/>GPIO 16 + 74AHCT125" --> LED
     end
 
-    PI -- "RGB Пакеты\n~30 FPS, Latency < 50ms" --> UDP
-    UDP -- "WiFi / Ethernet\nЛокальная сеть" --> ESP
+    PI -- "RGB пакеты<br/>~30 FPS, Latency &lt; 50ms" --> UDP
+    UDP -- "WiFi / Ethernet<br/>Локальная сеть" --> ESP
 
     classDef hardware fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef software fill:#e8f5e9,stroke:#4caf50,stroke-width:1px;
     classDef protocol fill:#e1f5fe,stroke:#03a9f4,stroke-width:1px,stroke-dasharray: 5 5;
-    
+
     class CAM,PI,ESP,LED hardware;
     class UDP protocol;
 ```
